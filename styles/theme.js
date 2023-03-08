@@ -1,35 +1,37 @@
-import { createTheme, responsiveFontSizes } from '@mui/material'
+import { createTheme, responsiveFontSizes } from "@mui/material";
 
 const theme = responsiveFontSizes(
-    createTheme({
-        palette: {
-            mode: 'dark',
-            primary: {
-                main: '#0D0E14',
-                background: '#202127',
-                soft: '#2D2E34',
-                softHover: '#45474f',
-                inactive: 'rgba(255,255,255,0.27)',
-            },
-            secondary: {
-                main: '#57BA84',
-                hover: '#3d9b68',
-                inactive: '#2a6b46',
-                text: 'rgba(255,255,255,0.55)',
-            },
-            error: {
-                main: '#931F1D',
-                hover: '#721916',
-                inactive: 'rgba(114,25,22,0.46)',
-            },
-        },
-        typography: {
-            allVariants: {
-                color: '#FFF',
-            },
-        },
-        components: {},
-    })
-)
+  createTheme({
+    palette: {
+      mode: "light",
+      primary: {
+        main: "#5A6000",
+        background: "#dddecd",
+        soft: "#8B9400",
+        softHover: "#676e01",
+        inactive: "#5A6000",
+      },
+      secondary: {
+        main: "#548A00",
+        hover: "#49681A",
+        inactive: "#365A00",
+        text: "#2a2a2a",
+      },
+      error: {
+        main: "#931F1D",
+        hover: "#721916",
+        inactive: "rgba(114,25,22,0.46)",
+      },
+    },
+    typography: {
+      allVariants: {
+        color: "#1e1e1e",
+        fontFamily: '"Helvetica", sans-serif',
+        whiteSpace: "pre-line",
+      },
+    },
+    components: {},
+  })
+);
 
-export default theme
+export default theme;
