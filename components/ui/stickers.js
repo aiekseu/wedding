@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import { ASSETS_URL } from "../../utils/consts";
-import Image from "next/image";
 import theme from "../../styles/theme";
 
-const stickers = Array(18)
+const stickers = Array(16)
   .fill()
   .map((v, i) => `${ASSETS_URL}stickers/${i + 1}.png`)
   .sort(() => (Math.random() > 0.5 ? 1 : -1));
@@ -49,18 +48,6 @@ const Stickers = () => {
       }}
     >
       {stickers.map((src, index) => (
-        // <Image
-        //   key={src}
-        //   src={src}
-        //   height={"150px"}
-        //   width={"150px"}
-        //   objectFit={"contain"}
-        //   style={{
-        //     position: "absolute",
-        //     top: `${(Math.random() * 100) % 80}%`,
-        //     left: `${(Math.random() * 100) % 60}%`,
-        //   }}
-        // />
         <Box
           key={src}
           sx={{

@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
+import { ASSETS_URL } from "../../utils/consts";
 
 const ShrekSomebody = () => {
   const [hidden, setHidden] = useState(false);
-  useEffect(() => {
-    disable_scrolling();
-    setTimeout(() => {
-      setHidden(true);
-      enable_scrolling();
-    }, 4000); // TODO: change to 5000
-  }, []);
-
+  const [playing, setPlaying] = useState(false);
   let scroll_style_element;
 
   function disable_scrolling() {
@@ -29,37 +23,67 @@ const ShrekSomebody = () => {
     if (scroll_style_element) document.head.removeChild(scroll_style_element);
   }
 
+  useEffect(() => {
+    disable_scrolling();
+  }, []);
+
+  const startVideo = () => {
+    setPlaying(true);
+    setTimeout(() => {
+      setHidden(true);
+      enable_scrolling();
+    }, 4000); // TODO: change to 5000
+  };
+
   return (
-    <Box
-      sx={{
-        overflow: "hidden",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: hidden ? -1 : 100,
-        opacity: hidden ? 0.1 : 1,
-        transition: "opacity ease-out .7s",
-      }}
-    >
-      <video
-        muted
-        autoPlay
-        loop
-        src={"/video/shrek-somebody.mp4"}
-        controls={false}
-        playsInline
-        style={{
-          height: "100vh",
-          minWidth: "100vw",
+    <>
+      {!playing && (
+        <Box
+          sx={{
+            height: "100vh",
+            width: "100%",
+            background: "rgba(221,222,205,1)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CircularProgress color="secondary" />
+        </Box>
+      )}
+      <Box
+        sx={{
           overflow: "hidden",
-          objectFit: "cover",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: hidden ? -1 : 100,
+          opacity: hidden ? 0.1 : 1,
+          transition: "opacity ease-out .7s",
         }}
-      />
-    </Box>
+      >
+        <video
+          muted
+          autoPlay
+          loop
+          src={ASSETS_URL + "shrek-somebody.mp4"}
+          controls={false}
+          playsInline
+          onPlay={startVideo}
+          onLoad={startVideo}
+          style={{
+            height: "100vh",
+            minWidth: "100vw",
+            overflow: "hidden",
+            objectFit: "cover",
+          }}
+        />
+      </Box>
+    </>
   );
 };
 

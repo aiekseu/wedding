@@ -4,18 +4,36 @@ import { createDefaultMaskGenerator, useWebMask } from "react-hook-mask";
 import ShrekButton from "./button";
 import theme from "../../styles/theme";
 import usePageRedirect from "../../utils/use-page-redirect";
+import axios from "axios";
+import { API_URL } from "../../utils/consts";
 
 const maskGenerator = createDefaultMaskGenerator("+9 (999) 999 99-99");
 
 const SignInDialog = ({ open, handleClose }) => {
   const [mobile, setMobile] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const toOnboarding = usePageRedirect("/profile/onboarding");
+  const toProfile = usePageRedirect("/profile");
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
+    setLoading(true);
+    const user = await axios.get(API_URL, {
+      params: { data: "userById", id: mobile },
+    });
+
     localStorage.setItem("id", mobile);
-    handleClose();
-    toOnboarding();
+    setLoading(false);
+
+    if (user.data.length > 0) {
+      // if user already exist
+      localStorage.setItem("user", JSON.stringify(user.data));
+      handleClose();
+      toProfile();
+    } else {
+      handleClose();
+      toOnboarding();
+    }
   };
 
   return (
@@ -39,6 +57,7 @@ const SignInDialog = ({ open, handleClose }) => {
           sx={{ mt: 2, py: 1 }}
           onClick={handleSignIn}
           disabled={mobile.length !== 11}
+          loading={loading}
         >
           Подтвердить присутствие
         </ShrekButton>

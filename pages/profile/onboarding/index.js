@@ -6,6 +6,7 @@ import {
   Box,
   Collapse,
   Container,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
@@ -37,8 +38,13 @@ const ProfileOnboarding = () => {
     ];
     setGuests(newGuests);
   };
+  const handleRemoveGuest = () => {
+    let newGuests = [...guests];
+    newGuests.pop();
+    setGuests(newGuests);
+  };
 
-  const toProfile = usePageRedirect("/profile");
+  const toProfile = usePageRedirect("/"); // TODO: change
   const [loading, setLoading] = useState(false);
   const handleSubmit = async () => {
     setLoading(true);
@@ -136,18 +142,26 @@ const ProfileOnboarding = () => {
           </AccordionDetails>
         </Accordion>
       ))}
-      <ShrekButton
-        onClick={handleAddGuest}
-        sx={{ mt: 4, px: 2, py: 1, width: { xs: "100%", md: "50%" } }}
-      >
-        Добавить гостя
-      </ShrekButton>
+      <Stack direction={"row"}>
+        <ShrekButton
+          onClick={handleAddGuest}
+          sx={{ mt: 4, px: 2, py: 1, width: "50%" }}
+        >
+          Добавить гостя
+        </ShrekButton>
+        <ShrekButton
+          onClick={handleRemoveGuest}
+          sx={{ ml: 4, mt: 4, px: 2, py: 1, width: "50%" }}
+        >
+          Убрать гостя
+        </ShrekButton>
+      </Stack>
       <ShrekButton
         onClick={handleSubmit}
         loading={loading}
         sx={{ mt: 2, px: 2, py: 1, width: { xs: "100%", md: "50%" } }}
       >
-        Продолжить
+        Сохранить
       </ShrekButton>
     </Container>
   );
