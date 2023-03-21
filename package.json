@@ -24,7 +24,7 @@
     "react-hook-mask": "^1.1.11",
     "react-player": "^2.11.2",
     "react-query": "^3.39.3",
-    "recharts": "^2.4.3"
+    "recharts": "^2.5.0"
   },
   "devDependencies": {
     "prettier": "2.8.4"
