@@ -4,7 +4,6 @@ import UserGlobalStyles from "../styles/global-styles";
 import createEmotionCache from "../styles/emotion-cache";
 import { CacheProvider } from "@emotion/react";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { useEffect, useState } from "react";
 
 const clientSideEmotionCache = createEmotionCache();
 const queryClient = new QueryClient();

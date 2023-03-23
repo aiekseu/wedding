@@ -59,7 +59,7 @@ const SignInDialog = ({ open, handleClose }) => {
           disabled={mobile.length !== 11}
           loading={loading}
         >
-          Подтвердить присутствие
+          Войти в профиль
         </ShrekButton>
       </Stack>
     </Dialog>

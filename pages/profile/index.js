@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Autocomplete, Box, Checkbox, CircularProgress, Container, Stack, TextField, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import { API_URL } from '../../utils/consts'
 import axios from 'axios'
 import theme from '../../styles/theme'
@@ -27,14 +27,28 @@ const ProfilePage = () => {
         {staleTime: 'Infinity', refetchInterval: false, refetchOnWindowFocus: false, refetchOnReconnect: false, }
     )
 
+    const queryClient = useQueryClient()
+
     const [loading, setLoading] = useState(false)
     const [guests, setGuests] = useState([])
+    const [saved, setSaved] = useState([false,false,false,false,false,false,false,false,false])
+
+    useEffect(() => {
+        for (let i = 0; i < saved.length; i++) {
+            if (saved[i]) {
+                console.log(i)
+                setTimeout(() => {
+                    setSaved([false,false,false,false,false,false,false,false,false])
+                }, 3000)
+            }
+        }
+    }, [saved])
 
     const handleAddGuest = async () => {
         setLoading(true)
         const newGuest = {
             'id': localStorage.getItem('id'),
-            'guest_num': guests.length + 1,
+            'guest_num': Math.floor((Math.random() * 1000000 % 100000)),
             'name': `Гость ${guests.length + 1}`,
             'is_coming': 1,
             'costume_id': 1,
@@ -55,10 +69,6 @@ const ProfilePage = () => {
         });
         await fethchedGuests.refetch()
 
-        const newGuests = [...guests, newGuest]
-        setGuests(newGuests)
-
-
         setLoading(false)
     }
 
@@ -78,8 +88,10 @@ const ProfilePage = () => {
         setLoading(false)
     }
 
-    const handleSaveGuest = async (guest) => {
+    const handleSaveGuest = async (guest, index) => {
         setLoading(true)
+
+        console.log(guest)
 
         await fetch(API_URL, {
             redirect: 'follow',
@@ -90,7 +102,13 @@ const ProfilePage = () => {
             },
         })
         await fethchedGuests.refetch()
+
+        const newSaved = [...saved]
+        newSaved[index] = true
+        setSaved(newSaved)
+
         setLoading(false)
+        void queryClient.refetchQueries('chartData')
     }
 
     return (
@@ -262,7 +280,7 @@ const ProfilePage = () => {
                                         <ShrekButton
                                             disabled={JSON.stringify(guest) === JSON.stringify(fethchedGuests.data[ index ])}
                                             loading={loading}
-                                            onClick={() => handleSaveGuest(guest)}
+                                            onClick={() => handleSaveGuest(guest, index)}
                                             sx={{ width: '100%' }}
                                         >
                                             Сохранить
@@ -279,6 +297,11 @@ const ProfilePage = () => {
                                             Удалить
                                         </ShrekButton>
                                     </Stack>
+                                    {
+                                        saved[index] && <Typography color={'primary.main'}>
+                                        Информация обновлена
+                                        </Typography>
+                                    }
                                 </Stack>
                             </Grid>
                         </Grid>,
