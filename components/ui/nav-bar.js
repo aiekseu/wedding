@@ -11,30 +11,12 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import { LANDING_SECTIONS } from "../../utils/consts";
-import Person4Icon from "@mui/icons-material/Person4";
 import { useEffect, useState } from "react";
-import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import usePageRedirect from "../../utils/use-page-redirect";
 import Image from "next/image";
 
 const NavBar = ({ handleOpenSignIn }) => {
   const [anchorElNav, setAnchorElNav] = useState(null);
-  const [isAuthorized, setIsAuthorized] = useState(false);
-
-  const toProfile = usePageRedirect("/profile");
-
-  useEffect(() => {
-    let interval = setInterval(() => {
-      if (localStorage.getItem("id")) {
-        setIsAuthorized(true);
-        clearInterval(interval);
-      }
-    }, 1000);
-  }, [isAuthorized]);
-
-  const handleToProfile = () => {
-    toProfile();
-  };
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -118,7 +100,7 @@ const NavBar = ({ handleOpenSignIn }) => {
             <Tooltip title="Профиль">
               <IconButton
                 size={"large"}
-                onClick={isAuthorized ? handleToProfile : handleOpenSignIn}
+                onClick={handleOpenSignIn}
                 sx={{ p: 0, border: ".5px solid #5A600030" }}
               >
                 <Image
