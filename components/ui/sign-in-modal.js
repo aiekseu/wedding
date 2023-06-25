@@ -11,7 +11,7 @@ import { API_URL } from '../../utils/consts'
 const maskGenerator = createDefaultMaskGenerator('+9 (999) 999 99-99')
 
 const SignInDialog = ({ open, handleClose }) => {
-    const [mobile, setMobile] = useState('')
+    const [mobile, setMobile] = useState('7')
     const [loading, setLoading] = useState(false)
 
     const toOnboarding = usePageRedirect('/profile/onboarding')
@@ -22,6 +22,9 @@ const SignInDialog = ({ open, handleClose }) => {
     useEffect(() => {
         let interval = setInterval(() => {
             if (localStorage.getItem('id')) {
+                if (localStorage.getItem('id')[0] === '8') {
+                    localStorage.setItem('id', localStorage.getItem('id').replace('8', '7'))
+                }
                 setIsAuthorized(true)
                 clearInterval(interval)
             }
@@ -30,6 +33,7 @@ const SignInDialog = ({ open, handleClose }) => {
 
     const handleSignIn = async () => {
         setLoading(true)
+
         const user = await axios.get(API_URL, {
             params: { data: 'userById', id: mobile },
         })

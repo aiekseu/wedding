@@ -1,5 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { Autocomplete, Box, Checkbox, CircularProgress, Container, Stack, TextField, Typography } from '@mui/material'
+import {
+    Autocomplete,
+    Box,
+    Checkbox,
+    CircularProgress,
+    Container,
+    FormControl,
+    FormControlLabel,
+    FormGroup,
+    Radio,
+    RadioGroup,
+    Stack,
+    TextField,
+    Typography,
+} from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useQuery, useQueryClient } from 'react-query'
 import { API_URL } from '../../utils/consts'
@@ -9,6 +23,28 @@ import ProfileAppBar from '@/components/profile/app-bar'
 import GuestImage from '@/components/profile/guest-image'
 import ShrekButton from '@/components/ui/button'
 
+function listToArray(fullString, separator) {
+    let fullArray = [];
+
+    if (fullString !== undefined) {
+        if (fullString.indexOf(separator) === -1) {
+            fullArray.push(fullString);
+        } else {
+            fullArray = fullString.split(separator);
+        }
+    }
+
+    return fullArray;
+}
+function stringifyBooleanObject(obj) {
+    let result = [];
+    for (let key in obj) {
+        if (obj[key] === true) {
+            result.push(key);
+        }
+    }
+    return result.join(',');
+}
 
 const ProfilePage = () => {
     const costumes = useQuery('costumes', () =>
@@ -16,29 +52,40 @@ const ProfilePage = () => {
     )
 
     const fethchedGuests = useQuery('guests', () =>
-        axios
-            .get(API_URL, {
-                params: { data: 'userById', id: localStorage.getItem('id') },
-            })
-            .then((res) => {
-                setGuests(res.data)
-                return res.data
-            }),
-        {staleTime: 'Infinity', refetchInterval: false, refetchOnWindowFocus: false, refetchOnReconnect: false, }
+            axios
+                .get(API_URL, {
+                    params: { data: 'userById', id: localStorage.getItem('id') },
+                })
+                .then((res) => {
+                    const guests = res.data.map((g) => {
+                        const drinksArray = listToArray(g.drinks, ',');
+                        const drinks = {
+                            'б/а': drinksArray.indexOf('б/а') !== -1,
+                            'пиво': drinksArray.indexOf('пиво') !== -1,
+                            'коктейли': drinksArray.indexOf('коктейли') !== -1,
+                            'настойки': drinksArray.indexOf('настойки') !== -1,
+                            'водка': drinksArray.indexOf('водка') !== -1,
+                        }
+                        return {...g, drinks: drinks}
+                    })
+                    setGuests(guests)
+                    return guests
+                }),
+        { staleTime: 'Infinity', refetchInterval: false, refetchOnWindowFocus: false, refetchOnReconnect: false },
     )
 
     const queryClient = useQueryClient()
 
     const [loading, setLoading] = useState(false)
     const [guests, setGuests] = useState([])
-    const [saved, setSaved] = useState([false,false,false,false,false,false,false,false,false])
+    const [saved, setSaved] = useState([false, false, false, false, false, false, false, false, false])
 
     useEffect(() => {
         for (let i = 0; i < saved.length; i++) {
-            if (saved[i]) {
+            if (saved[ i ]) {
                 console.log(i)
                 setTimeout(() => {
-                    setSaved([false,false,false,false,false,false,false,false,false])
+                    setSaved([false, false, false, false, false, false, false, false, false])
                 }, 3000)
             }
         }
@@ -54,19 +101,23 @@ const ProfilePage = () => {
             'costume_id': 1,
             'costume_name': 'Шрек',
             'url': 'https://storage.yandexcloud.net/wedding-assets/heroes/1.jpg',
+            'alcohol': 0,
+            'leaving': '',
+            'breakfast': 0,
+            'supboard': 0,
         }
 
         await fetch(API_URL, {
-            redirect: "follow",
-            method: "POST",
+            redirect: 'follow',
+            method: 'POST',
             body: JSON.stringify({
-                action: "addUser",
-                ...newGuest
+                action: 'addUser',
+                ...newGuest,
             }),
             headers: {
-                "Content-Type": "text/plain;charset=utf-8",
+                'Content-Type': 'text/plain;charset=utf-8',
             },
-        });
+        })
         await fethchedGuests.refetch()
 
         setLoading(false)
@@ -91,12 +142,13 @@ const ProfilePage = () => {
     const handleSaveGuest = async (guest, index) => {
         setLoading(true)
 
-        console.log(guest)
+        const guestDrinks = stringifyBooleanObject(guest.drinks)
+        const data = {...guest, drinks: guestDrinks}
 
         await fetch(API_URL, {
             redirect: 'follow',
             method: 'POST',
-            body: JSON.stringify({ ...guest, action: 'patchUser' }),
+            body: JSON.stringify({ ...data, action: 'patchUser' }),
             headers: {
                 'Content-Type': 'text/plain;charset=utf-8',
             },
@@ -104,7 +156,7 @@ const ProfilePage = () => {
         await fethchedGuests.refetch()
 
         const newSaved = [...saved]
-        newSaved[index] = true
+        newSaved[ index ] = true
         setSaved(newSaved)
 
         setLoading(false)
@@ -248,7 +300,7 @@ const ProfilePage = () => {
                                         />
                                     </Box>
 
-                                    {/* НОЧЕВКА */}
+                                    {/* УЕЗЖАЕТ */}
                                     <Box
                                         mt={2}
                                         sx={{
@@ -257,17 +309,192 @@ const ProfilePage = () => {
                                             flexDirection: 'row',
                                             alignItems: 'center',
                                         }}>
-                                        <Typography component={'span'} variant={'h6'} mr={2}>Останется на
-                                            ночевку:</Typography>
+                                        <Typography component={'span'} variant={'h6'} mr={2}>Когда уезжает с
+                                            площадки:</Typography>
+                                        <RadioGroup
+                                            value={guest.leaving}
+                                            onChange={(_, leavingValue) => {
+                                                setGuests((prevValue) => {
+                                                    return prevValue.map((value, indexValue) =>
+                                                        indexValue === index
+                                                            ? {
+                                                                ...value,
+                                                                leaving: leavingValue,
+                                                            }
+                                                            : value,
+                                                    )
+                                                })
+                                            }}
+                                        >
+                                            <FormControlLabel value="22" control={<Radio/>}
+                                                              label="22.07, не оставаясь на ночевку"/>
+                                            <FormControlLabel value="23-12" control={<Radio/>} label="23.07 до 12.00"/>
+                                            <FormControlLabel value="23-18" control={<Radio/>} label="23.07 до 18:00"/>
+                                        </RadioGroup>
+                                    </Box>
+
+                                    {/* ЗАВТРАК */}
+                                    <Box
+                                        mt={2}
+                                        sx={{
+                                            width: '90%',
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                        }}>
+                                        <Typography component={'span'} variant={'h6'} mr={2}>Завтрак:</Typography>
+                                        <RadioGroup
+                                            value={guest.breakfast}
+                                            onChange={(_, breakfastValue) => {
+                                                setGuests((prevValue) => {
+                                                    return prevValue.map((value, indexValue) =>
+                                                        indexValue === index
+                                                            ? {
+                                                                ...value,
+                                                                breakfast: breakfastValue,
+                                                            }
+                                                            : value,
+                                                    )
+                                                })
+                                            }}
+                                        >
+                                            <FormControlLabel value="0" control={<Radio/>} label="Не нужен"/>
+                                            <FormControlLabel value="porridge" control={<Radio/>} label="Каша овсяная"/>
+                                            <FormControlLabel value="eggs" control={<Radio/>} label="Яичница"/>
+                                        </RadioGroup>
+                                    </Box>
+
+                                    {/* АЛКОГОЛЬ */}
+                                    <Box
+                                        mt={2}
+                                        sx={{
+                                            width: '90%',
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                        }}>
+                                        <Typography component={'span'} variant={'h6'} mr={2}>Напитки:</Typography>
+                                        <FormControl component="fieldset" variant="standard">
+                                            <FormGroup>
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            checked={guest.drinks['б/а']}
+                                                            onChange={(_, checked) => {
+                                                                setGuests((prevValue) => {
+                                                                    return prevValue.map((value, indexValue) =>
+                                                                        indexValue === index
+                                                                            ? {
+                                                                                ...value,
+                                                                                drinks: { ...value.drinks, 'б/а': checked },
+                                                                            }
+                                                                            : value,
+                                                                    )
+                                                                })
+                                                            }}
+                                                        />
+                                                    }
+                                                    label="Безалкогольные напитки"
+                                                />
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox checked={guest.drinks['пиво']}
+                                                                  onChange={(_, checked) => {
+                                                                      setGuests((prevValue) => {
+                                                                          return prevValue.map((value, indexValue) =>
+                                                                              indexValue === index
+                                                                                  ? {
+                                                                                      ...value,
+                                                                                      drinks: { ...value.drinks, 'пиво': checked },
+                                                                                  }
+                                                                                  : value,
+                                                                          )
+                                                                      })
+                                                                  }} />
+                                                    }
+                                                    label="Пиво"
+                                                />
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox checked={guest.drinks['коктейли']}
+                                                                  onChange={(_, checked) => {
+                                                                      setGuests((prevValue) => {
+                                                                          return prevValue.map((value, indexValue) =>
+                                                                              indexValue === index
+                                                                                  ? {
+                                                                                      ...value,
+                                                                                      drinks: { ...value.drinks, 'коктейли': checked },
+                                                                                  }
+                                                                                  : value,
+                                                                          )
+                                                                      })
+                                                                  }}/>
+                                                    }
+                                                    label="Слабоалкогольные коктейли (апероль/фиеро)"
+                                                />
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            checked={guest.drinks['водка']}
+                                                            onChange={(_, checked) => {
+                                                                setGuests((prevValue) => {
+                                                                    return prevValue.map((value, indexValue) =>
+                                                                        indexValue === index
+                                                                            ? {
+                                                                                ...value,
+                                                                                drinks: { ...value.drinks, 'водка': checked },
+                                                                            }
+                                                                            : value,
+                                                                    )
+                                                                })
+                                                            }}
+                                                        />
+                                                    }
+                                                    label="Крепкий алкоголь (водка)"
+                                                />
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            checked={guest.drinks['настойки']}
+                                                            onChange={(_, checked) => {
+                                                                setGuests((prevValue) => {
+                                                                    return prevValue.map((value, indexValue) =>
+                                                                        indexValue === index
+                                                                            ? {
+                                                                                ...value,
+                                                                                drinks: { ...value.drinks, 'настойки': checked },
+                                                                            }
+                                                                            : value,
+                                                                    )
+                                                                })
+                                                            }}
+                                                        />
+                                                    }
+                                                    label="Крепкий алкоголь (домашние настойки)"
+                                                />
+                                            </FormGroup>
+                                        </FormControl>
+                                    </Box>
+
+                                    {/* САПЫ */}
+                                    <Box
+                                        mt={2}
+                                        sx={{
+                                            width: '90%',
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                        }}>
+                                        <Typography component={'span'} variant={'h6'} mr={2}>Будет арендовать сапборд:</Typography>
                                         <Checkbox
-                                            checked={guest.stay === 1}
+                                            checked={guest.supboard === 1}
                                             onChange={(event) => {
                                                 setGuests((prevValue) => {
                                                     return prevValue.map((value, indexValue) =>
                                                         indexValue === index
                                                             ? {
                                                                 ...value,
-                                                                stay: event.target.checked ? 1 : 0,
+                                                                supboard: event.target.checked ? 1 : 0,
                                                             }
                                                             : value,
                                                     )
@@ -275,6 +502,8 @@ const ProfilePage = () => {
                                             }}
                                         />
                                     </Box>
+
+                                    {/* СОХРАНИТЬ / УДАЛИТЬ */}
                                     <Stack direction={'row'} sx={{ width: { xs: '100%', md: '90%' }, mt: 3, mb: 2 }}
                                            spacing={2}>
                                         <ShrekButton
@@ -298,8 +527,8 @@ const ProfilePage = () => {
                                         </ShrekButton>
                                     </Stack>
                                     {
-                                        saved[index] && <Typography color={'primary.main'}>
-                                        Информация обновлена
+                                        saved[ index ] && <Typography color={'primary.main'}>
+                                            Информация обновлена
                                         </Typography>
                                     }
                                 </Stack>
@@ -312,7 +541,7 @@ const ProfilePage = () => {
                     <ShrekButton
                         loading={loading}
                         onClick={handleAddGuest}
-                        sx={{ width: '100%', my: 2, py: 1 }}
+                        sx={{ width: '100%', mt: 4, py: 2, mb: 6 }}
                     >
                         Добавить гостя
                     </ShrekButton>

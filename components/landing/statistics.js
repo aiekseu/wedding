@@ -33,23 +33,28 @@ const StatisticsSection = () => {
     )
 
     const [chartData, setChartData] = useState([])
+    const [guestsWithCostumes, setGuestsWithCostumes] = useState(0)
     useEffect(() => {
         if (guests.isSuccess && chartData.length === 0) {
             const data = guests.data
             const stat = {}
+            let heroes = 0
             for (let hero of data) {
-                if (hero.costume_name)
+                if (hero.costume_name) {
+                    heroes++
                     if (stat[ hero.costume_name ]) {
                         stat[ hero.costume_name ]++
                     } else {
                         stat[ hero.costume_name ] = 1
                     }
+                }
             }
             const result = Object.entries(stat).map(([name, count]) => {
                 const url = guests.data.find((g) => g.costume_name === name).url
                 return { name, count, url }
             })
             setChartData(result)
+            setGuestsWithCostumes(heroes)
         }
     }, [guests])
 
@@ -85,8 +90,9 @@ const StatisticsSection = () => {
                 <Grid item xs={12} md={6}>
                     <Box
                         display={'flex'}
-                        justifyContent={'center'}
-                        alignItems={'top'}
+                        justifyContent={'top'}
+                        alignItems={'center'}
+                        flexDirection={'column'}
                         height={{ xs: 'unset', md: '400px' }}
                     >
                         <Box>
@@ -95,6 +101,14 @@ const StatisticsSection = () => {
                             </Typography>
                             <Typography variant={'h5'} component={'span'}>
                                 {guests.isSuccess && guests.data.length}
+                            </Typography>
+                        </Box>
+                        <Box>
+                            <Typography variant={'h6'} component={'span'}>
+                                {guests.isSuccess && `Определились с костюмами: `}
+                            </Typography>
+                            <Typography variant={'h5'} component={'span'}>
+                                {guests.isSuccess && guestsWithCostumes}
                             </Typography>
                         </Box>
                     </Box>
@@ -154,7 +168,14 @@ const StatisticsSection = () => {
             </Box>
 
             {/* PIE CHART */}
-            <Box mt={{ xs: 4, md: 0 }} py={4} sx={{ height: { xs: '50vh', md: '60vh' }, overflow: 'hidden' }}>
+            <Box
+                mt={{ xs: 4, md: 0 }}
+                py={4}
+                sx={{
+                    height: { xs: '50vh', md: '60vh' },
+                    overflow: 'hidden',
+                }}
+            >
                 {
                     guests.isLoading &&
                     <Box
@@ -171,7 +192,7 @@ const StatisticsSection = () => {
                 }
                 {
                     guests.isSuccess && chartData.length > 0 &&
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={'100%'}>
                         <PieChart width={'100%'} height={60}>
                             <Pie
                                 data={chartData}
@@ -181,6 +202,8 @@ const StatisticsSection = () => {
                                 label={(data) => {
                                     return `${data.name}: ${data.value}`
                                 }}
+                                outerRadius={isMobile ? '40%' : '70%'}
+                                innerRadius={isMobile ? '25%' : '50%'}
                             >
                                 {
                                     chartData.map((entry, index) => (
