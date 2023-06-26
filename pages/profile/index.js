@@ -485,7 +485,7 @@ const ProfilePage = () => {
                                             flexDirection: 'row',
                                             alignItems: 'center',
                                         }}>
-                                        <Typography component={'span'} variant={'h6'} mr={2}>Будет арендовать сапборд:</Typography>
+                                        <Typography component={'span'} variant={'h6'} mr={2}>Будет плавать на сапборде:</Typography>
                                         <Checkbox
                                             checked={guest.supboard === 1}
                                             onChange={(event) => {
