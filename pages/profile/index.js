@@ -333,37 +333,6 @@ const ProfilePage = () => {
                                         </RadioGroup>
                                     </Box>
 
-                                    {/* ЗАВТРАК */}
-                                    <Box
-                                        mt={2}
-                                        sx={{
-                                            width: '90%',
-                                            display: 'flex',
-                                            flexDirection: 'row',
-                                            alignItems: 'center',
-                                        }}>
-                                        <Typography component={'span'} variant={'h6'} mr={2}>Завтрак:</Typography>
-                                        <RadioGroup
-                                            value={guest.breakfast}
-                                            onChange={(_, breakfastValue) => {
-                                                setGuests((prevValue) => {
-                                                    return prevValue.map((value, indexValue) =>
-                                                        indexValue === index
-                                                            ? {
-                                                                ...value,
-                                                                breakfast: breakfastValue,
-                                                            }
-                                                            : value,
-                                                    )
-                                                })
-                                            }}
-                                        >
-                                            <FormControlLabel value="0" control={<Radio/>} label="Не нужен"/>
-                                            <FormControlLabel value="porridge" control={<Radio/>} label="Каша овсяная"/>
-                                            <FormControlLabel value="eggs" control={<Radio/>} label="Яичница"/>
-                                        </RadioGroup>
-                                    </Box>
-
                                     {/* АЛКОГОЛЬ */}
                                     <Box
                                         mt={2}
@@ -373,7 +342,7 @@ const ProfilePage = () => {
                                             flexDirection: 'row',
                                             alignItems: 'center',
                                         }}>
-                                        <Typography component={'span'} variant={'h6'} mr={2}>Напитки:</Typography>
+                                        <Typography component={'span'} variant={'h6'} mr={2}>Напитки в день свадьбы:</Typography>
                                         <FormControl component="fieldset" variant="standard">
                                             <FormGroup>
                                                 <FormControlLabel
@@ -474,6 +443,37 @@ const ProfilePage = () => {
                                                 />
                                             </FormGroup>
                                         </FormControl>
+                                    </Box>
+
+                                    {/* ЗАВТРАК */}
+                                    <Box
+                                        mt={2}
+                                        sx={{
+                                            width: '90%',
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                        }}>
+                                        <Typography component={'span'} variant={'h6'} mr={2}>Завтрак:</Typography>
+                                        <RadioGroup
+                                            value={guest.breakfast}
+                                            onChange={(_, breakfastValue) => {
+                                                setGuests((prevValue) => {
+                                                    return prevValue.map((value, indexValue) =>
+                                                        indexValue === index
+                                                            ? {
+                                                                ...value,
+                                                                breakfast: breakfastValue,
+                                                            }
+                                                            : value,
+                                                    )
+                                                })
+                                            }}
+                                        >
+                                            <FormControlLabel value="0" control={<Radio/>} label="Не нужен"/>
+                                            <FormControlLabel value="porridge" control={<Radio/>} label="Каша овсяная"/>
+                                            <FormControlLabel value="eggs" control={<Radio/>} label="Яичница"/>
+                                        </RadioGroup>
                                     </Box>
 
                                     {/* САПЫ */}
