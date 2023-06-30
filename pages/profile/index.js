@@ -65,6 +65,8 @@ const ProfilePage = () => {
                             'коктейли': drinksArray.indexOf('коктейли') !== -1,
                             'настойки': drinksArray.indexOf('настойки') !== -1,
                             'водка': drinksArray.indexOf('водка') !== -1,
+                            'вино_красное': drinksArray.indexOf('вино_красное') !== -1,
+                            'вино_белое': drinksArray.indexOf('вино_белое') !== -1,
                         }
                         return {...g, drinks: drinks}
                     })
@@ -400,6 +402,42 @@ const ProfilePage = () => {
                                                                   }}/>
                                                     }
                                                     label="Слабоалкогольные коктейли (апероль/фиеро)"
+                                                />
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox checked={guest.drinks['вино_белое']}
+                                                                  onChange={(_, checked) => {
+                                                                      setGuests((prevValue) => {
+                                                                          return prevValue.map((value, indexValue) =>
+                                                                              indexValue === index
+                                                                                  ? {
+                                                                                      ...value,
+                                                                                      drinks: { ...value.drinks, 'вино_белое': checked },
+                                                                                  }
+                                                                                  : value,
+                                                                          )
+                                                                      })
+                                                                  }}/>
+                                                    }
+                                                    label="Вино белое"
+                                                />
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox checked={guest.drinks['вино_красное']}
+                                                                  onChange={(_, checked) => {
+                                                                      setGuests((prevValue) => {
+                                                                          return prevValue.map((value, indexValue) =>
+                                                                              indexValue === index
+                                                                                  ? {
+                                                                                      ...value,
+                                                                                      drinks: { ...value.drinks, 'вино_красное': checked },
+                                                                                  }
+                                                                                  : value,
+                                                                          )
+                                                                      })
+                                                                  }}/>
+                                                    }
+                                                    label="Вино красное"
                                                 />
                                                 <FormControlLabel
                                                     control={
